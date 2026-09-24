@@ -1,0 +1,22 @@
+# Stage A (Section 5.4): vary ONLY the inner activation, validation-only.
+# Run after cifar100_shellmetric.yaml has locked its loss and built the official
+# ReLU-derived pilot/plan. Copy the three reference hashes from that study's
+# provenance.json: locked_loss_hash, autok_plan_semantic_hash, and
+# autok_plan_provenance_hash. The relu entry reuses the primary AutoK encoders.
+include: ../base/cifar100.yaml
+
+experiment:
+  name: cifar100_stage_a_activation
+
+study:
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  seeds: [0, 1, 2]
+  architecture:
+    stage: activation
+    candidates: [relu, silu, gelu_exact, channel_radial_silu]
+    locked_loss_hash: REPLACE_WITH_PRIMARY_locked_loss_hash
+    reference_plan_semantic_hash: REPLACE_WITH_PRIMARY_autok_plan_semantic_hash
+    reference_plan_provenance_hash: REPLACE_WITH_PRIMARY_autok_plan_provenance_hash

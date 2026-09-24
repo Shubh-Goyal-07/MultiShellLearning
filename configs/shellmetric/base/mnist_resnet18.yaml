@@ -1,0 +1,32 @@
+# MNIST rehearsal cell: the scratch ResNet-18 recipe on 1x28x28 inputs at d=3,
+# shortened to 15 epochs. Rehearsal only (study.rehearsal: true); it exercises
+# the controls, baselines, and Section 5.4 stages cheaply and is never a
+# publication result. Every MNIST rehearsal suite includes this file so pilot,
+# plan, and encoder jobs are shared through one cache.
+include: cifar_resnet18.yaml
+
+cache_dir: artifacts/cache/mnist_rehearsal
+
+data:
+  dataset: mnist
+  root: data
+  download: true
+  split_manifest: artifacts/splits/mnist.json
+  split_seed: 12345
+  validation_fraction: 0.10
+  sealed_test: true
+
+pilot:
+  seeds: [0]
+  epochs: 15
+  warmup_epochs: 1
+  num_workers: 0
+
+training:
+  epochs: 15
+  warmup_epochs: 1
+  workers: 0
+  keep_epoch_checkpoints: false
+
+evaluation:
+  locked: true   # test still needs --allow-test on the command line

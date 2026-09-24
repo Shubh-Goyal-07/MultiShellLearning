@@ -1,0 +1,11 @@
+include: cifar_resnet18.yaml
+
+cache_dir: artifacts/cache/cifar10
+
+data:
+  dataset: cifar10
+  root: data
+  split_manifest: artifacts/splits/cifar10.json
+  split_seed: 12345
+  validation_fraction: 0.10
+  sealed_test: true

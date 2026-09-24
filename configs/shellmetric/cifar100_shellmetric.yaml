@@ -1,0 +1,14 @@
+# Canonical shell study + essential controls (CIFAR-100, ResNet-18, d=3):
+# FixedS compact sweep, AutoK, one-shell (FixedS(1)), shuffled confusion, and
+# no-shell-loss. Tune the loss here once, then lock it for every other suite.
+include: base/cifar100.yaml
+
+experiment:
+  name: cifar100_shellmetric
+
+study:
+  fixed_shell_counts: compact
+  ensure_one_shell_control: true
+  run_auto_k: true
+  controls: [shuffled_confusion, no_shell_loss]
+  seeds: [0, 1, 2, 3, 4]

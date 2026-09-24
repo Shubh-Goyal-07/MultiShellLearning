@@ -1,0 +1,17 @@
+# Dimension curve (d in 2..1024): AutoK, CE, ArcFace, SupCon, batch-hard triplet.
+# With the shared cache_dir, the d = 3, 32, 128 jobs are reused from the core
+# benchmark; the dry run reports which jobs are new.
+include: base/cifar100.yaml
+
+experiment:
+  name: cifar100_dimension_curve
+
+study:
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  embedding_dims: dimension_curve
+  baselines: [cross_entropy, arcface, supcon, batch_hard_triplet]
+  external_baselines: [hyperspacex_matched]
+  seeds: [0, 1, 2, 3, 4]

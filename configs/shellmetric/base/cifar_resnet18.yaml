@@ -1,0 +1,49 @@
+# Shared scratch-ResNet cell (Section 8.4): 3x3 stride-1 stem, no max-pool,
+# ReLU(inplace=False) + bias-free linear output, SGD 0.1 / momentum 0.9 /
+# wd 5e-4, 5-epoch warmup, 200 epochs, cosine. Every suite that includes this
+# file shares one training recipe, so identical encoder jobs are reused.
+method: shellmetric
+
+model:
+  backbone: resnet18
+  backbone_activation: relu
+  embedding_dim: 3
+  embedding_head: linear_no_bias
+  output_bias: false
+  pretrained: false
+
+pilot:
+  loss: cross_entropy
+  folds: 3
+  seeds: [0, 1, 2]
+  batch_size: 128
+  epochs: 200
+  optimizer: sgd
+  learning_rate: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+  warmup_epochs: 5
+  scheduler: cosine
+  num_workers: 4
+  label_smoothing: 0.0
+  temperature_calibration: false
+
+sampling:
+  classes_per_batch: null   # P = min(C, 32)
+  samples_per_class: null   # K = max(4, floor(128 / P))
+  target_batch_size: 128
+
+training:
+  epochs: 200
+  optimizer: sgd
+  learning_rate: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+  warmup_epochs: 5
+  scheduler: cosine
+  mixed_precision: false
+  workers: 4
+  keep_epoch_checkpoints: true
+
+evaluation:
+  locked: false

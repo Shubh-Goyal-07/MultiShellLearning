@@ -1,0 +1,40 @@
+# MNIST/Fashion-MNIST smoke cell (Section 8.4): native 28x28 inputs, small CNN,
+# AdamW lr 1e-3, wd 1e-4, 30 epochs, cosine. Pipeline correctness only.
+method: shellmetric
+
+model:
+  backbone: small_cnn
+  backbone_activation: relu
+  embedding_dim: 3
+  embedding_head: linear_no_bias
+  output_bias: false
+
+pilot:
+  loss: cross_entropy
+  folds: 3
+  seeds: [0]
+  batch_size: 128
+  epochs: 30
+  optimizer: adamw
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: cosine
+  label_smoothing: 0.0
+  temperature_calibration: false
+
+training:
+  epochs: 30
+  optimizer: adamw
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: cosine
+
+study:
+  fixed_shell_counts: compact
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  seeds: [0]
+
+evaluation:
+  locked: false

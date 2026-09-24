@@ -1,0 +1,12 @@
+# Canonical shell-count study on CIFAR-10 (no controls: they run only on CIFAR-100).
+include: base/cifar10.yaml
+
+experiment:
+  name: cifar10_shell_study
+
+study:
+  fixed_shell_counts: compact
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  seeds: [0, 1, 2, 3, 4]

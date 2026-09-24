@@ -1,0 +1,14 @@
+include: base/small_cnn_smoke.yaml
+
+experiment:
+  name: mnist_smoke
+
+cache_dir: artifacts/cache/mnist
+
+data:
+  dataset: mnist
+  root: data
+  split_manifest: artifacts/splits/mnist.json
+  split_seed: 12345
+  validation_fraction: 0.10
+  sealed_test: true

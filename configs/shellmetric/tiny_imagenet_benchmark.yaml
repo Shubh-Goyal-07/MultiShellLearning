@@ -1,0 +1,27 @@
+# Dataset generalization: TinyImageNet (64x64, CIFAR-stem ResNet-18), d=128.
+# The labeled official validation split is the sealed test partition.
+include: base/cifar_resnet18.yaml
+
+experiment:
+  name: tiny_imagenet_benchmark
+
+cache_dir: artifacts/cache/tiny_imagenet
+
+data:
+  dataset: tiny_imagenet
+  root: data
+  split_manifest: artifacts/splits/tiny_imagenet.json
+  split_seed: 12345
+  validation_fraction: 0.10
+  sealed_test: true
+
+model:
+  embedding_dim: 128
+
+study:
+  fixed_shell_counts: none
+  run_auto_k: true
+  controls: []
+  baselines: all
+  external_baselines: [hyperspacex_matched]
+  seeds: [0, 1, 2, 3, 4]

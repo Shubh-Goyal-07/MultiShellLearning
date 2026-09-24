@@ -1,0 +1,16 @@
+# Backbone confirmation: scratch CIFAR-stem ResNet-50 at d=128.
+include: base/cifar100.yaml
+
+experiment:
+  name: cifar100_resnet50_backbone
+
+model:
+  backbone: resnet50
+  embedding_dim: 128
+
+study:
+  fixed_shell_counts: none
+  run_auto_k: true
+  controls: []
+  baselines: [cross_entropy, arcface, supcon, batch_hard_triplet]
+  seeds: [0, 1, 2, 3, 4]

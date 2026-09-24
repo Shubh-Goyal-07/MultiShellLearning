@@ -1,0 +1,14 @@
+include: base/small_cnn_smoke.yaml
+
+experiment:
+  name: fashion_mnist_smoke
+
+cache_dir: artifacts/cache/fashion_mnist
+
+data:
+  dataset: fashion_mnist
+  root: data
+  split_manifest: artifacts/splits/fashion_mnist.json
+  split_seed: 12345
+  validation_fraction: 0.10
+  sealed_test: true

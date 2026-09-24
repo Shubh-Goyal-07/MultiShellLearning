@@ -1,0 +1,30 @@
+# Transformer confirmation (ViT-S/16, d=128). Gated: every row reports
+# blocked_external_pin until external_pins.vit pins the provider, model ID,
+# dependency version, weight checksum, and preprocessing. Nothing trains.
+include: base/cifar100.yaml
+
+experiment:
+  name: cifar100_vit_backbone
+
+model:
+  backbone: vit_s16
+  backbone_activation: native
+  embedding_dim: 128
+  pretrained: true
+
+training:
+  epochs: 100
+  optimizer: adamw
+  learning_rate: 0.00005
+  weight_decay: 0.05
+  warmup_epochs: 5
+  scheduler: cosine
+
+study:
+  fixed_shell_counts: none
+  run_auto_k: true
+  controls: []
+  baselines: [cross_entropy, arcface, supcon, batch_hard_triplet]
+  seeds: [0, 1, 2, 3, 4]
+
+external_pins: {}

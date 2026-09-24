@@ -1,0 +1,26 @@
+# MNIST rehearsal copy of the CIFAR-100 template below; fill it with
+# scripts/fill_architecture_config.py instead of copying hashes by hand.
+# Stage B (Section 5.4): fix the literal Stage-A winner and vary ONLY the output
+# map, validation-only. activation_decision_hash is the decision_hash in the
+# Stage-A study's architecture_decision.json. The linear_no_bias entry reuses the
+# Stage-A winner's encoders; radial_power_gate trains from the same seeded state.
+include: ../base/mnist_resnet18.yaml
+
+experiment:
+  name: mnist_rehearsal_stage_b_output_map
+
+study:
+  rehearsal: true
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  seeds: [0, 1, 2]
+  architecture:
+    stage: output_map
+    candidates: [linear_no_bias, radial_power_gate]
+    activation: REPLACE_WITH_STAGE_A_WINNER
+    activation_decision_hash: REPLACE_WITH_STAGE_A_decision_hash
+    locked_loss_hash: REPLACE_WITH_PRIMARY_locked_loss_hash
+    reference_plan_semantic_hash: REPLACE_WITH_PRIMARY_autok_plan_semantic_hash
+    reference_plan_provenance_hash: REPLACE_WITH_PRIMARY_autok_plan_provenance_hash

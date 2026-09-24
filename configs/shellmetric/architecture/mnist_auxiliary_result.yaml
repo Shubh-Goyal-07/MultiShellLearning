@@ -1,0 +1,27 @@
+# MNIST rehearsal copy of the CIFAR-100 template below; fill it with
+# scripts/fill_architecture_config.py instead of copying hashes by hand.
+# Auxiliary result: the frozen Stage-A/Stage-B winner with seeds [0..4] and, once
+# evaluation.locked is true, the only architecture configuration allowed on the
+# sealed test split. If the winners are relu + linear_no_bias, every row aliases
+# the primary ShellMetric-AutoK run and no ActivationVariant row is created.
+include: ../base/mnist_resnet18.yaml
+
+experiment:
+  name: mnist_rehearsal_auxiliary_result
+
+study:
+  rehearsal: true
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  seeds: [0, 1, 2, 3, 4]
+  architecture:
+    stage: auxiliary
+    activation: REPLACE_WITH_STAGE_A_WINNER
+    embedding_head: REPLACE_WITH_STAGE_B_WINNER
+    activation_decision_hash: REPLACE_WITH_STAGE_A_decision_hash
+    output_map_decision_hash: REPLACE_WITH_STAGE_B_decision_hash
+    locked_loss_hash: REPLACE_WITH_PRIMARY_locked_loss_hash
+    reference_plan_semantic_hash: REPLACE_WITH_PRIMARY_autok_plan_semantic_hash
+    reference_plan_provenance_hash: REPLACE_WITH_PRIMARY_autok_plan_provenance_hash

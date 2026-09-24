@@ -1,0 +1,16 @@
+# Core benchmark: AutoK and every in-repository baseline at d in {3, 32, 128}.
+# HyperSpaceX rows stay blocked_external_pin until external_pins.hyperspacex exists.
+include: base/cifar100.yaml
+
+experiment:
+  name: cifar100_core_benchmark
+
+study:
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  embedding_dims: core
+  baselines: all
+  external_baselines: [hyperspacex_matched, hyperspacex_official]
+  seeds: [0, 1, 2, 3, 4]

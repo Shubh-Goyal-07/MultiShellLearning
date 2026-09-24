@@ -1,0 +1,16 @@
+# MNIST rehearsal of the primary study: FixedS sweep + AutoK, the one-shell,
+# shuffled-confusion and no-shell-loss controls, and all eight in-repo
+# baselines (the method comparison). Its provenance.json feeds Stage A.
+include: base/mnist_resnet18.yaml
+
+experiment:
+  name: mnist_rehearsal_primary
+
+study:
+  rehearsal: true
+  fixed_shell_counts: compact
+  ensure_one_shell_control: true
+  run_auto_k: true
+  controls: [shuffled_confusion, no_shell_loss]
+  baselines: all
+  seeds: [0, 1, 2]
