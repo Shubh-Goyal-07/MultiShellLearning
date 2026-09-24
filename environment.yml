@@ -10,4 +10,4 @@ dependencies:
   - torchvision=0.20.1
   - pytorch-cuda=12.4
   - pip:
-      - -e .[dev,reporting]
+      - -e .[dev,reporting,viz]

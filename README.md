@@ -108,6 +108,27 @@ and `--reference-method` adds paired confidence intervals that match seeds withi
 each (dataset, partition, dimension) cell; reference-table rows never enter them.
 Failed jobs are counted, never dropped.
 
+## Embedding plots
+
+```powershell
+python scripts/visualize_embeddings.py artifacts/mnist/mnist_rehearsal_primary
+```
+
+For every evaluated row (method × d × seed × partition, ShellMetric and every
+baseline alike) this writes `<study>/visualizations/<partition>/d<d>/seed<s>/`:
+
+- `<method>_3d.html`: interactive 3D scatter coloured by class; ShellMetric rows
+  show their learned shells as spheres and each class's assigned shell.
+- `<method>_2d.png`: a 2D projection plus each class's ‖z‖ distribution against
+  the learned radii.
+- `overview.png`: every method side by side; `visualizations/index.html` links all.
+
+Embeddings with d > 3 are projected onto their top principal directions about
+the origin, so norms stay meaningful. Add `--offline` to embed plotly.js in each
+HTML file (so it opens without internet), `--method`/`--seed`/`--partition` to
+plot a subset, and `--output DIR` to write a filtered comparison elsewhere. The
+index always links every figure already present in the output directory.
+
 ## Implementation map
 
 - `src/multishell/confusion.py`: raw out-of-fold soft confusion `Q`, `W`, `Ŵ`, `h`.
@@ -125,6 +146,7 @@ Failed jobs are counted, never dropped.
 - `src/multishell/shellmetric/study.py`: row and job expansion, deduplication,
   controls, dimension suites, and external gates.
 - `src/multishell/shellmetric/architecture.py`: Stage A/B validation and the traced decision rule.
+- `src/multishell/visualize.py`: 3D/2D embedding-space figures for every row.
 - `src/multishell/shellmetric/stages.py`, `jobs.py`, `runner.py`: cached
   planning, the semantic job store, and the CLI.
 

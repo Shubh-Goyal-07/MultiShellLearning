@@ -28,6 +28,10 @@ dev = [
 reporting = [
   "pandas>=2.1",
 ]
+viz = [
+  "matplotlib>=3.8",
+  "plotly>=5.18",
+]
 
 [project.scripts]
 shellmetric-study = "multishell.shellmetric.runner:main"
