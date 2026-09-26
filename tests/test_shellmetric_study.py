@@ -390,12 +390,15 @@ def test_shuffled_control_plans_never_leak_into_other_seeds() -> None:
     assert {f"ShellMetric-AutoK-ShuffledConfusion/seed={seed}" for seed in (0, 1, 2)} <= set(plans)
 
 
-def test_mnist_dimension_curve_reuses_every_primary_d3_job() -> None:
+def test_mnist_dimension_curve_runs_every_primary_method_and_reuses_d3() -> None:
     configs = Path(__file__).resolve().parents[1] / "configs" / "shellmetric"
     planning = _planning(class_count=10)
     primary, _ = _manifest(load_config(configs / "mnist_rehearsal_primary.yaml"), planning)
     curve, _ = _manifest(load_config(configs / "mnist_dimension_curve.yaml"), planning)
+    assert {row.method for row in curve.reporting_rows} == {
+        row.method for row in primary.reporting_rows
+    }
+    assert {row.embedding_dim for row in curve.reporting_rows} == {2, 3, 32, 128, 512, 1024}
     primary_jobs = {job.job_id for job in primary.training_jobs}
     curve_d3 = {job.job_id for job in curve.training_jobs if job.encoder.embedding_dim == 3}
-    assert len(curve.training_jobs) == 5 * 6 * 3 and len(curve_d3) == 5 * 3
-    assert curve_d3 <= primary_jobs
+    assert len(curve.training_jobs) == 6 * len(primary_jobs) and curve_d3 == primary_jobs

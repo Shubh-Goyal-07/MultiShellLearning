@@ -58,7 +58,7 @@ architecture candidates.
 | `cifar100_vit_backbone.yaml` | ViT-S/16 confirmation (gated: `blocked_external_pin`) |
 | `architecture/*.yaml` | Section 5.4 Stage A, Stage B, and auxiliary result |
 | `mnist_rehearsal_primary.yaml`, `architecture/mnist_*.yaml` | cheap rehearsal of the whole workflow (ResNet-18 on MNIST, 15 epochs) |
-| `mnist_dimension_curve.yaml` | AutoK, CE, ArcFace, SupCon, and triplet at d ∈ {2, 3, 8, 16, 32, 128} on MNIST; reuses the rehearsal's d=3 jobs |
+| `mnist_dimension_curve.yaml` | every method of the MNIST rehearsal (FixedS, AutoK, controls, eight baselines) at d ∈ {2, 3, 32, 128, 512, 1024}; reuses its d=3 jobs |
 
 HyperSpaceX rows report `blocked_external_pin` until `external_pins.hyperspacex`
 records an immutable commit, environment, command, and checkpoint rule.
