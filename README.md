@@ -58,6 +58,7 @@ architecture candidates.
 | `cifar100_vit_backbone.yaml` | ViT-S/16 confirmation (gated: `blocked_external_pin`) |
 | `architecture/*.yaml` | Section 5.4 Stage A, Stage B, and auxiliary result |
 | `mnist_rehearsal_primary.yaml`, `architecture/mnist_*.yaml` | cheap rehearsal of the whole workflow (ResNet-18 on MNIST, 15 epochs) |
+| `mnist_dimension_curve.yaml` | AutoK, CE, ArcFace, SupCon, and triplet at d ∈ {2, 3, 8, 16, 32, 128} on MNIST; reuses the rehearsal's d=3 jobs |
 
 HyperSpaceX rows report `blocked_external_pin` until `external_pins.hyperspacex`
 records an immutable commit, environment, command, and checkpoint rule.
@@ -119,15 +120,22 @@ baseline alike) this writes `<study>/visualizations/<partition>/d<d>/seed<s>/`:
 
 - `<method>_3d.html`: interactive 3D scatter coloured by class; ShellMetric rows
   show their learned shells as spheres and each class's assigned shell.
-- `<method>_2d.png`: a 2D projection plus each class's ‖z‖ distribution against
-  the learned radii.
+- `<method>_2d.png`: a 2D view plus each class's true ‖z‖ against the learned radii.
 - `overview.png`: every method side by side; `visualizations/index.html` links all.
 
-Embeddings with d > 3 are projected onto their top principal directions about
-the origin, so norms stay meaningful. Add `--offline` to embed plotly.js in each
-HTML file (so it opens without internet), `--method`/`--seed`/`--partition` to
-plot a subset, and `--output DIR` to write a filtered comparison elsewhere. The
-index always links every figure already present in the output directory.
+Reduction is for display only. d ≤ 3 is drawn in native coordinates. For d > 3
+the default files use PCA about the origin (norms and shells stay readable), and
+`--reducers` adds nonlinear views: `umap` (default, needs `umap-learn`) and
+`tsne` (needs `scikit-learn`), written as `<method>_3d_umap.html`,
+`<method>_2d_umap.png`, `overview_umap.png`, and likewise for `tsne`. They show
+neighbourhood structure but not radii; the radius strip always uses the true
+d-dimensional norms. A missing package only skips its views, with a warning.
+
+Add `--offline` to embed plotly.js in each HTML file (so it opens without
+internet), `--method`/`--seed`/`--partition` to plot a subset, `--max-points` to
+trade detail for speed, and `--output DIR` to write a filtered comparison
+elsewhere. The index always links every figure already present in the output
+directory.
 
 ## Implementation map
 

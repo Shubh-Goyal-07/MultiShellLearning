@@ -1,0 +1,18 @@
+# MNIST dimension curve (rehearsal cell): AutoK, CE, ArcFace, SupCon, and
+# batch-hard triplet at d in {2, 3, 8, 16, 32, 128}, the spec's dimension-curve
+# method set on a subset of its dimensions. It shares base/mnist_resnet18.yaml
+# and its cache with mnist_rehearsal_primary.yaml, so the pilot, the shell plan,
+# and every d=3 job are reused from that run; --dry-run lists what is new.
+include: base/mnist_resnet18.yaml
+
+experiment:
+  name: mnist_dimension_curve
+
+study:
+  fixed_shell_counts: none
+  ensure_one_shell_control: false
+  run_auto_k: true
+  controls: []
+  embedding_dims: [2, 3, 8, 16, 32, 128]
+  baselines: [cross_entropy, arcface, supcon, batch_hard_triplet]
+  seeds: [0, 1, 2]

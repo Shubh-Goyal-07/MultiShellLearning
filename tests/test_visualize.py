@@ -9,8 +9,9 @@ import pytest
 pytest.importorskip("plotly")
 pytest.importorskip("matplotlib")
 
+from multishell import visualize  # noqa: E402
 from multishell.artifacts import save_npz  # noqa: E402
-from multishell.visualize import find_rows, project, visualize_study  # noqa: E402
+from multishell.visualize import find_rows, project, reduce, visualize_study  # noqa: E402
 
 
 def _row(study: Path, method: str, dim: int, *, plan: str | None = None) -> None:
@@ -56,7 +57,7 @@ def test_every_method_gets_3d_and_2d_figures_with_shells(tmp_path: Path) -> None
     assert rows["ShellMetric-FixedS(2)"].assignment == {0: 1, 1: 2, 2: 2}
     assert rows["SupCon"].radii is None
 
-    index = visualize_study(study)
+    index = visualize_study(study, reducers=("pca",))
     figures = study / "visualizations" / "validation"
     for cell, methods in {"d3": ("ShellMetric-FixedS(2)", "SupCon"), "d16": ("CE",)}.items():
         for method in methods:
@@ -68,8 +69,43 @@ def test_every_method_gets_3d_and_2d_figures_with_shells(tmp_path: Path) -> None
     assert "ShellMetric-FixedS%282%29_3d.html" in index.read_text()
 
     # A filtered re-run refreshes only its own figures; the index still links everything.
-    visualize_study(study, methods=["CE"])
+    visualize_study(study, methods=["CE"], reducers=("pca",))
     assert index.read_text().count("3D</a>") == 3
+
+
+@pytest.mark.parametrize(
+    ("reducer", "module", "name"), [("umap", "umap", "UMAP"), ("tsne", "sklearn", "t-SNE")]
+)
+def test_nonlinear_views_are_added_only_above_three_dimensions(
+    tmp_path: Path, reducer: str, module: str, name: str
+) -> None:
+    pytest.importorskip(module)
+    study = tmp_path / "study"
+    _row(study, "SupCon", 3)
+    _row(study, "CE", 16)
+
+    index = visualize_study(study, reducers=("pca", reducer))
+    high, low = (study / "visualizations" / "validation" / cell / "seed0" for cell in ("d16", "d3"))
+    for figure in (f"CE_3d_{reducer}.html", f"CE_2d_{reducer}.png", f"overview_{reducer}.png"):
+        assert (high / figure).stat().st_size > 0
+    assert (high / "CE_3d.html").is_file() and (high / "overview.png").is_file()
+    assert not list(low.glob(f"*_{reducer}.*"))
+    assert f"3D {name}</a>" in index.read_text()
+
+
+def test_missing_reducer_package_warns_and_keeps_pca(tmp_path: Path, monkeypatch) -> None:
+    study = tmp_path / "study"
+    _row(study, "CE", 16)
+    real = visualize.importlib.util.find_spec
+    monkeypatch.setattr(
+        visualize.importlib.util,
+        "find_spec",
+        lambda name, *args: None if name == "umap" else real(name, *args),
+    )
+    with pytest.warns(UserWarning, match="pip install umap-learn"):
+        visualize_study(study, reducers=("pca", "umap"))
+    cell = study / "visualizations" / "validation" / "d16" / "seed0"
+    assert (cell / "CE_3d.html").is_file() and not (cell / "CE_3d_umap.html").exists()
 
 
 def test_projection_keeps_native_coordinates_and_origin() -> None:
@@ -78,3 +114,7 @@ def test_projection_keeps_native_coordinates_and_origin() -> None:
     projected = project(values, 3)
     assert projected.shape == (50, 3)
     assert np.all(np.linalg.norm(projected, axis=1) <= np.linalg.norm(values, axis=1) + 1e-9)
+    for reducer in ("pca", "umap", "tsne"):  # low d is always drawn natively
+        assert np.array_equal(reduce(values[:, :3], 3, reducer), values[:, :3])
+    with pytest.raises(ValueError, match="unknown reducer"):
+        reduce(values, 2, "isomap")

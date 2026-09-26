@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from multishell.visualize import visualize_study  # noqa: E402
+from multishell.visualize import REDUCERS, visualize_study  # noqa: E402
 
 
 def main() -> int:
@@ -16,6 +16,13 @@ def main() -> int:
     parser.add_argument("--method", action="append", help="only these methods (repeatable)")
     parser.add_argument("--seed", action="append", type=int, help="only these seeds (repeatable)")
     parser.add_argument("--max-points", type=int, default=4000, help="points per plot")
+    parser.add_argument(
+        "--reducers",
+        nargs="+",
+        choices=REDUCERS,
+        default=["pca", "umap"],
+        help="display reductions for d > 3 (PCA is always written; d <= 3 is drawn natively)",
+    )
     parser.add_argument(
         "--output", type=Path, help="output dir (default: <study>/visualizations; one study only)"
     )
@@ -35,6 +42,7 @@ def main() -> int:
             seeds=args.seed,
             max_points=args.max_points,
             offline=args.offline,
+            reducers=args.reducers,
         )
         print(f"wrote {index}")
     return 0

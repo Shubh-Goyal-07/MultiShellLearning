@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import copy
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 from multishell.baselines import METRIC_BASELINES
-from multishell.config import ConfigError, resolve_config
+from multishell.config import ConfigError, load_config, resolve_config
 from multishell.confusion import build_confusion_artifact
 from multishell.shellmetric.architecture import (
     STAGE_A_CANDIDATES,
@@ -387,3 +388,14 @@ def test_shuffled_control_plans_never_leak_into_other_seeds() -> None:
     assert {row.method for row in shuffled} == {"ShellMetric-AutoK-ShuffledConfusion"}
     assert sorted(row.seed for row in shuffled) == [0, 1, 2]
     assert {f"ShellMetric-AutoK-ShuffledConfusion/seed={seed}" for seed in (0, 1, 2)} <= set(plans)
+
+
+def test_mnist_dimension_curve_reuses_every_primary_d3_job() -> None:
+    configs = Path(__file__).resolve().parents[1] / "configs" / "shellmetric"
+    planning = _planning(class_count=10)
+    primary, _ = _manifest(load_config(configs / "mnist_rehearsal_primary.yaml"), planning)
+    curve, _ = _manifest(load_config(configs / "mnist_dimension_curve.yaml"), planning)
+    primary_jobs = {job.job_id for job in primary.training_jobs}
+    curve_d3 = {job.job_id for job in curve.training_jobs if job.encoder.embedding_dim == 3}
+    assert len(curve.training_jobs) == 5 * 6 * 3 and len(curve_d3) == 5 * 3
+    assert curve_d3 <= primary_jobs
